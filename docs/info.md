@@ -49,7 +49,7 @@ Result (010) → Displays winner until reset or next start
 Reset (011) → Returns FSM to Idle
 
 
- How to test
+ ## How to test
 
 using the "Project.v" as the base you can use the following test bench code to test this project using xilinx software 
 
