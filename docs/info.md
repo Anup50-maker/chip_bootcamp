@@ -20,7 +20,7 @@ game options
 10 : Scissors
 
 11 : Invalid move
-## Inputs
+ Inputs
 
  Signal          Description                                     
 
@@ -31,14 +31,14 @@ game options
  p1_move[1:0]  Player 1 move (2-bit encoding)                  
  p2_move[1:0]  Player 2 move (2-bit encoding) 
  
-## Outputs
+Outputs
 Signal        Description                                                                                         
 
 winner[1:0]`  Game result <br> `00` = Tie <br> `01` = Player 1 wins <br> `10` = Player 2 wins <br> `11` = Invalid 
 state[2:0]`   FSM state (Idle, Evaluate, Result, Reset)                                                           
 debug[2:0]`   Debug info showing last moves 
 
-## Modes
+ Modes
 
 Idle (000) → Waiting for start signal
 
@@ -49,7 +49,7 @@ Result (010) → Displays winner until reset or next start
 Reset (011) → Returns FSM to Idle
 
 
-## How to test
+ How to test
 
 using the "Project.v" as the base you can use the following test bench code to test this project using xilinx software 
 
@@ -121,8 +121,7 @@ module tb_stone_paper_scissors;
 
 endmodule
 
-and the simulation results are :
-<img width="1568" height="219" alt="image" src="https://github.com/user-attachments/assets/20d5ba4a-9edc-4883-b808-24bf857532c3" />
+
 
 
 
