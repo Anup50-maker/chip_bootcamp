@@ -22,6 +22,12 @@ module tb;
         .clk(clk),
         .rst_n(rst_n),
         .ena(ena)
+    `ifdef USE_POWER_PINS
+        ,
+        .vccd1(1'b1),
+        .vssd1(1'b0)
+    `endif   
+
     );
 
     // Clock generation
