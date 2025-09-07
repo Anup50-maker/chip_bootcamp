@@ -11,8 +11,7 @@ module tt_um_stone_paper_scissors (
     input  wire rst_n,          // reset (unused in this version)
     input  wire ena,             // enable (unused in this version)
 
-    input  wire vccd1,          // User area 1 1.8V supply
-    input  wire vssd1           // User area 1 digital ground
+           // User area 1 digital ground
 
 );
 
