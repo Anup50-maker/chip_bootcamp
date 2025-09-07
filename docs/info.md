@@ -121,8 +121,8 @@ module tb_stone_paper_scissors;
 
 endmodule
 
-
-
+## External hardware 
+Here we no need of external software 
 
 
 
