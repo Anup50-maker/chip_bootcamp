@@ -9,7 +9,7 @@ module tt_um_stone_paper_scissors (
 
     input  wire clk,            // clock (unused in this version)
     input  wire rst_n,          // reset (unused in this version)
-    input  wire ena,             // enable (unused in this version)
+    input  wire ena             // enable (unused in this version)
 
            // User area 1 digital ground
 
