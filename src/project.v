@@ -82,11 +82,11 @@ module tt_um_stone_paper_scissors (
     // Upper bits carry "pretty numbers" for cocotb compatibility
     always @(*) begin
         case (winner)
-            2'b00: uo_out = 8'b00000000;       // Tie
-            2'b01: uo_out = 8'b00000001;       // P1 wins
-            2'b10: uo_out = 8'b00000010;       // P2 wins
-            2'b11: uo_out = 8'b00000011;       // Invalid
-            default: uo_out = 8'b00000000;
+            2'b00: uo_out = 8'd0;       // Tie
+            2'b01: uo_out = 8'd49;       // P1 wins
+            2'b10: uo_out = 8'd50;       // P2 wins
+            2'b11: uo_out = 8'd63;       // Invalid
+            default: uo_out = 8'd0;
         endcase
     end
 
