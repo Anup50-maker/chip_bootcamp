@@ -21,7 +21,7 @@ module tb;
         .uio_oe(uio_oe),
         .clk(clk),
         .rst_n(rst_n),
-        .ena(ena)
+        .ena(ena),
 
         .vccd1(1'b1),
         .vssd1(1'b0)
