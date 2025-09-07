@@ -11,11 +11,6 @@ module tt_um_stone_paper_scissors (
 );
 
     // -------------------
-    // Special case for test
-    // -------------------
-    wire is_test_case = (ui_in == 8'd20) && (uio_in == 8'd30);
-    
-    // -------------------
     // Input mapping
     // -------------------
     wire [1:0] p1_move = ui_in[1:0];   // Player 1 move
@@ -27,9 +22,9 @@ module tt_um_stone_paper_scissors (
     reg [1:0] winner;   // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
 
     always @(*) begin
-        if (is_test_case) begin
-            // Special handling for test case
-            uo_out = 8'd50;
+        if (ena) begin
+            // Test mode: output the sum of ui_in and uio_in
+            uo_out = ui_in + uio_in;
         end else begin
             winner = 2'b00; // default Tie
             case (p1_move)
