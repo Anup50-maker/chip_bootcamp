@@ -122,7 +122,8 @@ module tb_stone_paper_scissors;
 endmodule
 
 and the simulation results are :
-<img width="1414" height="229" alt="image" src="https://github.com/user-attachments/assets/a349abe1-e501-4708-9232-0f7b2236632f" />
+<img width="1568" height="219" alt="image" src="https://github.com/user-attachments/assets/20d5ba4a-9edc-4883-b808-24bf857532c3" />
+
 
 
 
