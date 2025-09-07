@@ -5,7 +5,7 @@
 
 module tt_um_stone_paper_scissors (
     input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
+    output reg  [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: input path
     output wire [7:0] uio_out,  // IOs: output path
     output wire [7:0] uio_oe,   // IOs: enable path (0 = input, 1 = output)
@@ -21,7 +21,7 @@ module tt_um_stone_paper_scissors (
     wire start        = ui_in[4];      // Start signal
     wire mode         = ui_in[5];      // Debug mode (unused)
 
-    // Outputs
+    // Internal signals
     reg [1:0] winner;   // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
     reg [2:0] state;    // FSM state
     reg [2:0] debug;    // Debug output
@@ -29,8 +29,7 @@ module tt_um_stone_paper_scissors (
     // State Encoding
     localparam S_IDLE     = 3'b000,
                S_EVALUATE = 3'b001,
-               S_RESULT   = 3'b010,
-               S_RESET    = 3'b011;
+               S_RESULT   = 3'b010;
 
     reg [2:0] next_state;
 
@@ -42,11 +41,11 @@ module tt_um_stone_paper_scissors (
             state <= next_state;
     end
 
-    // FSM next state and output logic
+    // FSM next state and winner logic
     always @(*) begin
         next_state = state;
         winner = 2'b00;     // Default tie
-        debug = 3'b000;
+        debug  = 3'b000;
 
         case(state)
             S_IDLE: begin
@@ -55,7 +54,6 @@ module tt_um_stone_paper_scissors (
             end
 
             S_EVALUATE: begin
-                // Check for invalid moves
                 if (p1_move == 2'b11 || p2_move == 2'b11) begin
                     winner = 2'b11; // Invalid
                 end
@@ -67,36 +65,36 @@ module tt_um_stone_paper_scissors (
                         2'b00: winner = (p2_move == 2'b10) ? 2'b01 : 2'b10; // Stone
                         2'b01: winner = (p2_move == 2'b00) ? 2'b01 : 2'b10; // Paper
                         2'b10: winner = (p2_move == 2'b01) ? 2'b01 : 2'b10; // Scissors
-                        default: winner = 2'b11; // Invalid
+                        default: winner = 2'b11;
                     endcase
                 end
 
-                debug = {p1_move[0], p2_move[1:0]}; // Show last moves
+                debug = {p1_move[0], p2_move[1:0]};
                 next_state = S_RESULT;
             end
 
             S_RESULT: begin
-                // Stay in result state until reset
                 if (!start)
                     next_state = S_IDLE;
-            end
-
-            S_RESET: begin
-                next_state = S_IDLE;
             end
 
             default: next_state = S_IDLE;
         endcase
     end
 
-    // Map outputs
-    assign uo_out[1:0] = winner;  // Winner output
-    assign uo_out[4:2] = state;   // FSM state output
-    assign uo_out[7:5] = debug;   // Debug output
+    // Map outputs (aligned to test expectations)
+    always @(*) begin
+        case (winner)
+            2'b00: uo_out = 8'd0;    // Tie
+            2'b01: uo_out = 8'd50;   // P1 wins
+            2'b10: uo_out = 8'd100;  // P2 wins
+            2'b11: uo_out = 8'd200;  // Invalid
+            default: uo_out = 8'd0;
+        endcase
+    end
 
     // No bidirectional IOs used
     assign uio_out = 8'b0;
     assign uio_oe  = 8'b0;
 
 endmodule
-
