@@ -23,8 +23,7 @@ module tb;
         .rst_n(rst_n),
         .ena(ena),
 
-        .vccd1(1'b1),
-        .vssd1(1'b0)
+
    
     );
 
