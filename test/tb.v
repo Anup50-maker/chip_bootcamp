@@ -42,7 +42,7 @@ module tb;
     // Test sequence
     initial begin
         $dumpfile("stone_paper_scissors_tb.vcd");
-        $dumpvars(0, tb_stone_paper_scissors);
+        $dumpvars(0, uut);
 
         clk = 0;
         ena = 1;
