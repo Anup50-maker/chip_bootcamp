@@ -27,7 +27,6 @@ module tb;
         .vccd1(1'b1),
         .vssd1(1'b0)
     `endif   
-
     );
 
     // Clock generation
@@ -68,7 +67,7 @@ module tb;
         play_round(2'b01, 2'b01); // Paper vs Paper -> Tie
         play_round(2'b11, 2'b00); // Invalid P1 move
 
-        #50;
+        #200;
         $finish;
     end
 
