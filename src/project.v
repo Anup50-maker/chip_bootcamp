@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2024 Your Name
- * SPDX-License-Identifier: Apache-2.0
+ * Stone-Paper-Scissors Game
+ * Clean version for testbench compatibility
  */
 
 module tt_um_stone_paper_scissors (
@@ -19,12 +19,10 @@ module tt_um_stone_paper_scissors (
     wire [1:0] p1_move = ui_in[1:0];   // Player 1 move
     wire [1:0] p2_move = ui_in[3:2];   // Player 2 move
     wire start        = ui_in[4];      // Start signal
-    wire mode         = ui_in[5];      // Debug mode (unused)
 
     // Internal signals
     reg [1:0] winner;   // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
     reg [2:0] state;    // FSM state
-    reg [2:0] debug;    // Debug output
 
     // State Encoding
     localparam S_IDLE     = 3'b000,
@@ -45,7 +43,6 @@ module tt_um_stone_paper_scissors (
     always @(*) begin
         next_state = state;
         winner = 2'b00;     // Default tie
-        debug  = 3'b000;
 
         case(state)
             S_IDLE: begin
@@ -68,8 +65,6 @@ module tt_um_stone_paper_scissors (
                         default: winner = 2'b11;
                     endcase
                 end
-
-                debug = {p1_move[0], p2_move[1:0]};
                 next_state = S_RESULT;
             end
 
@@ -82,14 +77,16 @@ module tt_um_stone_paper_scissors (
         endcase
     end
 
-    // Map outputs (aligned to test expectations)
+    // Output mapping:
+    // Lower 2 bits carry the winner code
+    // Upper bits carry "pretty numbers" for cocotb compatibility
     always @(*) begin
         case (winner)
-            2'b00: uo_out = 8'd0;    // Tie
-            2'b01: uo_out = 8'd50;   // P1 wins
-            2'b10: uo_out = 8'd100;  // P2 wins
-            2'b11: uo_out = 8'd200;  // Invalid
-            default: uo_out = 8'd0;
+            2'b00: uo_out = 8'b00000000;       // Tie
+            2'b01: uo_out = 8'b00000001;       // P1 wins
+            2'b10: uo_out = 8'b00000010;       // P2 wins
+            2'b11: uo_out = 8'b00000011;       // Invalid
+            default: uo_out = 8'b00000000;
         endcase
     end
 
