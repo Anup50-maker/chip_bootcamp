@@ -16,7 +16,7 @@ module tb;
     tt_um_stone_paper_scissors uut (
         .ui_in(ui_in),
         .uo_out(uo_out),
-        .uio_in(uio_in),     // not used
+        .uio_in(uio_in),
         .uio_out(uio_out),
         .uio_oe(uio_oe),
         .clk(clk),
