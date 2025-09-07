@@ -1,7 +1,4 @@
-/*
- * Stone-Paper-Scissors Game
- * Clean combinational version for testbench compatibility
- */
+
 
 module tt_um_stone_paper_scissors (
     input  wire [7:0] ui_in,    // Dedicated inputs
