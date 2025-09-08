@@ -1,5 +1,5 @@
 module tt_um_stone_paper_scissors (
-    input  wire [70] ui_in,    // Dedicated inputs
+    input  wire [7:0] ui_in,    // **FIXED**: Correct vector syntax [7:0]
     output reg  [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: input path
     output wire [7:0] uio_out,  // IOs: output path (unused)
