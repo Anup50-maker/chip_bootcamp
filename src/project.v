@@ -10,46 +10,36 @@ module tt_um_stone_paper_scissors (
     input  wire ena       // enable
 );
 
-    // Input mapping
-    wire [1:0] p1_move = ui_in[1:0];
-    wire [1:0] p2_move = ui_in[3:2];
+    // **NEW**: Registers to safely capture the inputs
+    reg [1:0] p1_move_reg;
+    reg [1:0] p2_move_reg;
 
-    // Winner logic
-    reg [1:0] winner; // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
+    // Combinational logic to determine the winner based on STABLE registered inputs
+    wire [1:0] winner; // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
+    
+    // This logic now uses the stable "_reg" versions
+    assign winner = (p1_move_reg == p2_move_reg) ? 2'b00 : // Tie
+                  (p1_move_reg == 2'b00 && p2_move_reg == 2'b10) ? 2'b01 : // P1: Stone beats Scissors
+                  (p1_move_reg == 2'b01 && p2_move_reg == 2'b00) ? 2'b01 : // P1: Paper beats Stone
+                  (p1_move_reg == 2'b10 && p2_move_reg == 2'b01) ? 2'b01 : // P1: Scissors beats Paper
+                  (p2_move_reg == 2'b00 && p1_move_reg == 2'b10) ? 2'b10 : // P2: Stone beats Scissors
+                  (p2_move_reg == 2'b01 && p1_move_reg == 2'b00) ? 2'b10 : // P2: Paper beats Stone
+                  (p2_move_reg == 2'b10 && p1_move_reg == 2'b01) ? 2'b10 : // P2: Scissors beats Paper
+                  2'b11; // Any other combination is invalid
 
-    // Combinational logic to determine the winner
-    always @(*) begin
-        // Default to Tie, handles cases like P1=Stone, P2=Stone
-        winner = 2'b00; 
-        
-        case (p1_move)
-            2'b00: begin // Player 1: Stone
-                if (p2_move == 2'b10) winner = 2'b01;      // P1 wins (Stone beats Scissors)
-                else if (p2_move == 2'b01) winner = 2'b10; // P2 wins (Paper beats Stone)
-            end
-            2'b01: begin // Player 1: Paper
-                if (p2_move == 2'b00) winner = 2'b01;      // P1 wins (Paper beats Stone)
-                else if (p2_move == 2'b10) winner = 2'b10; // P2 wins (Scissors beats Paper)
-            end
-            2'b10: begin // Player 1: Scissors
-                if (p2_move == 2'b01) winner = 2'b01;      // P1 wins (Scissors beats Paper)
-                else if (p2_move == 2'b00) winner = 2'b10; // P2 wins (Stone beats Scissors)
-            end
-            default: winner = 2'b11; // Invalid P1 move
-        endcase
-        
-        // Also check if P2 move is invalid
-        if (p2_move == 2'b11) begin
-            winner = 2'b11;
-        end
-    end
-
-    // Synchronous block to register the output
-    // This is good design practice
+    // Main synchronous block
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
+            // Reset all registers to a known state
             uo_out <= 8'd0;
-        end else if (ena) begin // Only update when the design is enabled
+            p1_move_reg <= 2'b0;
+            p2_move_reg <= 2'b0;
+        end else if (ena) begin
+            // **Step 1: On the first clock cycle, capture the inputs**
+            p1_move_reg <= ui_in[1:0];
+            p2_move_reg <= ui_in[3:2];
+
+            // **Step 2: On the second clock cycle, the output reflects the result of the previously captured inputs**
             case (winner)
                 2'b00: uo_out <= 8'd0;    // Tie
                 2'b01: uo_out <= 8'd49;   // '1' -> Player 1 wins
