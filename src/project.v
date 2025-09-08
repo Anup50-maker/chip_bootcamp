@@ -1,5 +1,5 @@
 module tt_um_stone_paper_scissors (
-    input  wire [7:0] ui_in,    // Dedicated inputs
+    input  wire [70] ui_in,    // Dedicated inputs
     output reg  [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: input path
     output wire [7:0] uio_out,  // IOs: output path (unused)
@@ -10,23 +10,10 @@ module tt_um_stone_paper_scissors (
     input  wire ena       // enable
 );
 
-    // **NEW**: Registers to safely capture the inputs
+    // Registers to safely capture the inputs
     reg [1:0] p1_move_reg;
     reg [1:0] p2_move_reg;
-
-    // Combinational logic to determine the winner based on STABLE registered inputs
-    wire [1:0] winner; // 00 = Tie, 01 = P1 wins, 10 = P2 wins, 11 = Invalid
     
-    // This logic now uses the stable "_reg" versions
-    assign winner = (p1_move_reg == p2_move_reg) ? 2'b00 : // Tie
-                  (p1_move_reg == 2'b00 && p2_move_reg == 2'b10) ? 2'b01 : // P1: Stone beats Scissors
-                  (p1_move_reg == 2'b01 && p2_move_reg == 2'b00) ? 2'b01 : // P1: Paper beats Stone
-                  (p1_move_reg == 2'b10 && p2_move_reg == 2'b01) ? 2'b01 : // P1: Scissors beats Paper
-                  (p2_move_reg == 2'b00 && p1_move_reg == 2'b10) ? 2'b10 : // P2: Stone beats Scissors
-                  (p2_move_reg == 2'b01 && p1_move_reg == 2'b00) ? 2'b10 : // P2: Paper beats Stone
-                  (p2_move_reg == 2'b10 && p1_move_reg == 2'b01) ? 2'b10 : // P2: Scissors beats Paper
-                  2'b11; // Any other combination is invalid
-
     // Main synchronous block
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -35,11 +22,28 @@ module tt_um_stone_paper_scissors (
             p1_move_reg <= 2'b0;
             p2_move_reg <= 2'b0;
         end else if (ena) begin
-            // **Step 1: On the first clock cycle, capture the inputs**
+            // **Step 1: On the first clock cycle, capture the inputs.**
             p1_move_reg <= ui_in[1:0];
             p2_move_reg <= ui_in[3:2];
 
-            // **Step 2: On the second clock cycle, the output reflects the result of the previously captured inputs**
+            // **Step 2: On the next cycle, calculate the result based on PREVIOUSLY captured inputs and update the output.**
+            // A temporary variable to hold the calculated winner for this cycle.
+            reg [1:0] winner; 
+
+            // All logic is now inside the clocked block.
+            if (p1_move_reg > 2'b10 || p2_move_reg > 2'b10) begin
+                winner = 2'b11; // Invalid move
+            end else if (p1_move_reg == p2_move_reg) begin
+                winner = 2'b00; // Tie
+            end else if ((p1_move_reg == 2'b00 && p2_move_reg == 2'b10) || // Stone vs Scissors
+                         (p1_move_reg == 2'b01 && p2_move_reg == 2'b00) || // Paper vs Stone
+                         (p1_move_reg == 2'b10 && p2_move_reg == 2'b01)) begin // Scissors vs Paper
+                winner = 2'b01; // Player 1 wins
+            end else begin
+                winner = 2'b10; // Player 2 wins
+            end
+
+            // Assign the final output value based on the calculated winner.
             case (winner)
                 2'b00: uo_out <= 8'd0;    // Tie
                 2'b01: uo_out <= 8'd49;   // '1' -> Player 1 wins
